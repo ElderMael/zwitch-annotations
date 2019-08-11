@@ -18,7 +18,7 @@ behavior to code-of-conduct@atomist.com.
 
 If you find a problem, please create an [issue][].
 
-[issue]: https://github.com/atomist-seeds/empty-sdm/issues
+[issue]: https://github.com/ElderMael/zwitch-annotations/issues
 
 ---
 [switch-sdm]: https://github.com/ElderMael/zwitch-sdm
