@@ -1,24 +1,111 @@
 plugins {
-  id 'java-library'
-  id 'maven'
+    id 'java-library'
+    id 'signing'
+    id 'maven'
+    id 'maven-publish'
 }
 
-group = "io.eldermael.zwitch"
+group = "io.eldermael"
 version = "0.1.0"
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+
 repositories {
-  jcenter()
+    jcenter()
 }
 
 dependencies {
-  testImplementation 'junit:junit:4.12'
+
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {
-  manifest {
-    attributes(
-        'Implementation-Title': project.name,
-        'Implementation-Version': project.version
-    )
-  }
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'zwitch-annotations'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Zwitch Annotations'
+                description = 'Annotations to work with the Zwitch SDM'
+                url = 'https://github.com/ElderMael/zwitch-annotations'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'ElderMael'
+                        name = 'Miguel Angel Enriquez Lopez'
+                        email = 'sftwr.mael@gmail.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git:github.com/ElderMael/zwitch-annotations.git'
+                    developerConnection = 'scm:git:ssh://github.com/ElderMael/zwitch-annotations.git'
+                    url = 'https://github.com/ElderMael/zwitch-annotations/tree/master'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign configurations.archives
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
