@@ -9,13 +9,16 @@ import java.lang.annotation.Target;
  * Annotation that marks Types and Methods to belong to a particular feature determined by {@link
  * Feature#value()}.
  */
-
 @Retention(RetentionPolicy.SOURCE)
 @Target({
     ElementType.TYPE,
-    ElementType.METHOD
+    ElementType.FIELD,
+    ElementType.METHOD,
+    ElementType.PACKAGE,
 })
 public @interface Feature {
-
+  /**
+   * A single unique name for the feature represented by the annotated element.
+   */
   String value();
 }
